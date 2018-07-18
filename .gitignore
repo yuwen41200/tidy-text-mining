@@ -3,7 +3,7 @@
 .RData
 .Rbuildignore
 _publish.R
-*_files
+*_cache
 _book
 _main.*
 packages.bib

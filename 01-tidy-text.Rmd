@@ -256,7 +256,7 @@ We use `str_extract()` here because the UTF-8 encoded texts from Project Gutenbe
 
 Now let's plot (Figure 1.3).
 
-```{r plotcompare, dependson = "frequency"}
+```{r plotcompare, dependson = "frequency", fig.width=10, fig.height=5.5}
 library(scales)
 
 # expect a warning about rows with missing values being removed

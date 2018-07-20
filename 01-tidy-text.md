@@ -404,7 +404,7 @@ ggplot(frequency, aes(x = proportion, y = `Jane Austen`,
   labs(y = "Jane Austen", x = NULL)
 ```
 
-<img src="01-tidy-text_files/figure-markdown_github/plotcompare-1.png" width="672" />
+<img src="01-tidy-text_files/figure-markdown_github/plotcompare-1.png" width="960" />
 
 (Figure 1.3: Comparing the word frequencies of Jane Austen, the Brontë sisters, and H.G. Wells)
 

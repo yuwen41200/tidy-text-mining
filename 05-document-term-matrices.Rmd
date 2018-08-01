@@ -432,6 +432,14 @@ stock_sentiment_count <- stock_tokens %>%
 stock_sentiment_count
 ```
 
+```{r}
+# transform into proportion
+mat <- as.matrix(stock_sentiment_count[, -1])
+rownames(mat) <- stock_sentiment_count[, 1, drop = TRUE]
+mat <- prop.table(mat, 1)
+round(mat * 100, 3)
+```
+
 It might be interesting to examine which company has the most news with "litigious" or "uncertain" terms. But the simplest measure, much as it was for most analysis in Chapter 2, is to see whether the news is more positive or negative. As a general quantitative measure of sentiment, we'll use "(positive - negative) / (positive + negative)" (Figure 5.8).
 
 ```{r stockpositivity}

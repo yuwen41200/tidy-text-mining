@@ -677,6 +677,25 @@ stock_sentiment_count
     ## 8 Twitter              4        12      157       79           1          75
     ## 9 Yahoo                3        28      130       74           0          71
 
+``` r
+# transform into proportion
+mat <- as.matrix(stock_sentiment_count[, -1])
+rownames(mat) <- stock_sentiment_count[, 1, drop = TRUE]
+mat <- prop.table(mat, 1)
+round(mat * 100, 3)
+```
+
+    ##           constraining litigious negative positive superfluous uncertainty
+    ## Amazon           2.215     2.532   26.582   45.570       0.949      22.152
+    ## Apple            1.911     2.335   34.183   33.121       0.425      28.025
+    ## Facebook         1.003     8.020   32.080   37.594       1.003      20.301
+    ## Google           2.966     3.390   25.424   43.644       0.000      24.576
+    ## IBM              1.865     5.128   34.266   34.499       0.000      24.242
+    ## Microsoft        1.644     5.205   25.205   35.342       0.822      31.781
+    ## Netflix          1.026     1.795   28.462   41.538       0.000      27.179
+    ## Twitter          1.220     3.659   47.866   24.085       0.305      22.866
+    ## Yahoo            0.980     9.150   42.484   24.183       0.000      23.203
+
 It might be interesting to examine which company has the most news with "litigious" or "uncertain" terms. But the simplest measure, much as it was for most analysis in Chapter 2, is to see whether the news is more positive or negative. As a general quantitative measure of sentiment, we'll use "(positive - negative) / (positive + negative)" (Figure 5.8).
 
 ``` r

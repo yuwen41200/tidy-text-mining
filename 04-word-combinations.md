@@ -466,7 +466,7 @@ ggraph(bigram_graph, layout = "fr") +
 
 <img src="04-word-combinations_files/figure-markdown_github/bigramgraph-1.png" width="1152" />
 
-(Figure 4.4: Common bigrams in Pride and Prejudice, showing those that occurred more than 20 times and where neither word was a stop-word)
+(Figure 4.4: Common bigrams in Jane Austen's novels, showing those that occurred more than 20 times and where neither word was a stop word)
 
 In Figure 4.4, we can visualize some details of the text structure. For example, we see that salutations such as "miss", "lady", "sir", and "colonel" form common centers of nodes, which are often followed by names. We also see pairs or triplets along the outside that form common short phrases ("half hour", "thousand pounds", or "short time/pause").
 
@@ -496,7 +496,7 @@ ggraph(bigram_graph, layout = "fr") +
 
 <img src="04-word-combinations_files/figure-markdown_github/bigramggraphausten2-1.png" width="1152" />
 
-(Figure 4.5: Common bigrams in Pride and Prejudice, with some polishing.)
+(Figure 4.5: Common bigrams in Jane Austen's novels, with some polishing)
 
 It may take some experimentation with ggraph to get your networks into a presentable format like this, but the network structure is useful and flexible way to visualize relational tidy data.
 

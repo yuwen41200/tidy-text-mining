@@ -195,7 +195,7 @@ year_term_counts %>%
   ylab("% frequency of word in inaugural address")
 ```
 
-(Figure 5.4: Changes in word frequency over time within Presidential inaugural addresses, for four selected terms)
+(Figure 5.4: Changes in word frequency over time within Presidential inaugural addresses, for six selected terms)
 
 These examples show how you can use tidytext, and the related suite of tidy tools, to analyze sources even if their origin was not in a tidy format.
 

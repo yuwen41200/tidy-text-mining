@@ -7,7 +7,8 @@ output: github_document
 ```{r echo = FALSE}
 library(knitr)
 opts_chunk$set(message = FALSE, warning = FALSE, cache = TRUE,
-               cache.lazy = FALSE, results = "hold", fig.retina = 2)
+               cache.lazy = FALSE, results = "hold",
+               fig.retina = 2, fig.show = "hold")
 options(width = 100, dplyr.width = 100)
 library(ggplot2)
 theme_set(theme_light())

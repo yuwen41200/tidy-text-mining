@@ -137,14 +137,11 @@ ggplot(frequency, aes(Julia, David)) +
   scale_x_log10(labels = percent_format()) +
   scale_y_log10(labels = percent_format()) +
   geom_abline(color = "red")
-```
-
-<img src="07-tweet-archives_files/figure-markdown_github/spreadplot-1.png" width="672" />
-
-``` r
     # reference lines: geom_abline() for diagonal, geom_hline() for
     #                  horizontal, and geom_vline() for vertical
 ```
+
+<img src="07-tweet-archives_files/figure-markdown_github/spreadplot-1.png" width="672" />
 
 (Figure 7.2: Comparing the frequency of words used by Julia and David)
 
@@ -222,13 +219,10 @@ word_ratios %>%
   geom_col(show.legend = FALSE) +
   coord_flip() +
   ylab("log odds ratio (David/Julia)") #+ the following seems have no use
+  #scale_fill_discrete(name = "", labels = c("David", "Julia"))
 ```
 
 <img src="07-tweet-archives_files/figure-markdown_github/plotratios-1.png" width="624" />
-
-``` r
-  #scale_fill_discrete(name = "", labels = c("David", "Julia"))
-```
 
 (Figure 7.3: Comparing the odds ratios of words from our accounts)
 
@@ -506,13 +500,10 @@ word_by_rts %>%
   facet_wrap(~ person, scales = "free", ncol = 2) +
   coord_flip() +
   labs(x = NULL, y = "Median # of retweets for tweets containing each word")
+  # also arrange(desc(retweets)) and mutate(word = factor(word, rev(unique(word))))
 ```
 
 <img src="07-tweet-archives_files/figure-markdown_github/plotrts-1.png" width="960" />
-
-``` r
-  # also arrange(desc(retweets)) and mutate(word = factor(word, rev(unique(word))))
-```
 
 (Figure 7.6: Words with highest median retweets)
 

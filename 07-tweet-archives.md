@@ -26,7 +26,7 @@ tweets <- bind_rows(tweets_julia %>% mutate(person = "Julia"),
 ggplot(tweets, aes(x = timestamp, fill = person)) +
   geom_histogram(bins = 20, show.legend = FALSE) +
   # position = "identity" seems have no use
-  facet_wrap(~person, ncol = 1)
+  facet_wrap(~ person, ncol = 1)
 ```
 
 <img src="07-tweet-archives_files/figure-markdown_github/ssetup-1.png" width="672" />
@@ -179,6 +179,7 @@ word_ratios <- tidy_tweets %>%
   mutate_if(is.numeric, funs((. + 1) / sum(. + 1))) %>%
     # mutate_if(.tbl, .predicate, .funs, ...)
     #   operates on columns for which a predicate returns TRUE
+    # WHY NOT mutate_if(is.numeric, funs((. + 1) / (sum(.) + 1))) ?!
   mutate(logratio = log(David / Julia)) %>%
   arrange(desc(logratio))
 ```
@@ -243,6 +244,7 @@ words_by_time <- tidy_tweets %>%
   group_by(person, time_floor) %>%
   mutate(time_total = sum(n)) %>%
   group_by(word) %>%  # overrides existing grouping
+                      # WHY NOT group_by(person, word) ?!
   mutate(word_total = sum(n)) %>%
   ungroup() %>%
   rename(count = n) %>%
@@ -438,6 +440,7 @@ To start with, let’s look at the number of times each of our tweets was retwee
 totals <- tidy_tweets %>%
   group_by(person, id) %>%
   summarise(rts = sum(retweets)) %>%
+  # WHY NOT summarise(rts = first(retweets)) ?!
   group_by(person) %>%
   summarise(total_rts = sum(rts))
 
@@ -462,7 +465,7 @@ word_by_rts <- tidy_tweets %>%
   summarise(retweets = median(rts), uses = n()) %>%
   left_join(totals) %>%
   filter(retweets != 0) %>%
-  ungroup()
+  ungroup()  # or it will group by person
 
 word_by_rts %>%
   filter(uses >= 5) %>%
@@ -515,6 +518,7 @@ We can follow a similar procedure to see which words led to more favorites. Are 
 totals <- tidy_tweets %>%
   group_by(person, id) %>%
   summarise(favs = sum(favorites)) %>%
+  # WHY NOT summarise(favs = first(favorites)) ?!
   group_by(person) %>%
   summarise(total_favs = sum(favs))
 

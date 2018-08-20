@@ -176,7 +176,7 @@ word_ratios <- tidy_tweets %>%
   spread(person, n, fill = 0) %>%
     # fill: missing values will be replaced with this value
     #       (both explicit missing values and implicit missings)
-  mutate_if(is.numeric, funs((. + 1) / sum(. + 1))) %>%
+  mutate_if(is.numeric, funs((. + 1) / (sum(.) + 1))) %>%
     # mutate_if(.tbl, .predicate, .funs, ...)
     #   operates on columns for which a predicate returns TRUE
     # WHY NOT mutate_if(is.numeric, funs((. + 1) / (sum(.) + 1))) ?!
@@ -192,21 +192,21 @@ word_ratios %>%
 ```
 
     ## # A tibble: 351 x 4
-    ##    word        David   Julia logratio
-    ##    <chr>       <dbl>   <dbl>    <dbl>
-    ##  1 words     0.00346 0.00345  0.00270
-    ##  2 science   0.00600 0.00592  0.0137 
-    ##  3 idea      0.00531 0.00542 -0.0218 
-    ##  4 email     0.00231 0.00222  0.0391 
-    ##  5 file      0.00231 0.00222  0.0391 
-    ##  6 purrr     0.00231 0.00222  0.0391 
-    ##  7 test      0.00208 0.00197  0.0515 
-    ##  8 counts    0.00162 0.00173 -0.0663 
-    ##  9 david     0.00138 0.00148 -0.0663 
-    ## 10 education 0.00162 0.00173 -0.0663 
+    ##    word      David   Julia logratio
+    ##    <chr>     <dbl>   <dbl>    <dbl>
+    ##  1 words   0.00377 0.00378 -0.00334
+    ##  2 science 0.00653 0.00648  0.00771
+    ##  3 idea    0.00577 0.00594 -0.0279 
+    ##  4 email   0.00251 0.00243  0.0330 
+    ##  5 file    0.00251 0.00243  0.0330 
+    ##  6 purrr   0.00251 0.00243  0.0330 
+    ##  7 test    0.00226 0.00216  0.0454 
+    ##  8 account 0.00201 0.00189  0.0612 
+    ##  9 api     0.00201 0.00189  0.0612 
+    ## 10 sad     0.00201 0.00189  0.0612 
     ## # ... with 341 more rows
 
-We are about equally likely to tweet about maps, email, files, and APIs.
+We are about equally likely to tweet about words, science, ideas, and email.
 
 Which words are most likely to be from Julia's account or from David's account? Let's just take the top 15 most distinctive words for each account and plot them in Figure 7.3.
 
@@ -227,7 +227,7 @@ word_ratios %>%
 
 (Figure 7.3: Comparing the odds ratios of words from our accounts)
 
-So David has tweeted about specific conferences he has gone to, genes, and Stack Overflow, while Julia tweeted about Utah, Census data, and her family.
+So David has tweeted about specific conferences he has gone to and Stack Overflow, while Julia tweeted about Utah, Census data, and her family.
 
 7.4 Changes in word use
 -----------------------
@@ -243,8 +243,8 @@ words_by_time <- tidy_tweets %>%
   count(time_floor, person, word) %>%
   group_by(person, time_floor) %>%
   mutate(time_total = sum(n)) %>%
-  group_by(word) %>%  # overrides existing grouping
-                      # WHY NOT group_by(person, word) ?!
+  group_by(person, word) %>%  # overrides existing grouping
+                              # WHY NOT group_by(person, word) ?!
   mutate(word_total = sum(n)) %>%
   ungroup() %>%
   rename(count = n) %>%
@@ -253,20 +253,20 @@ words_by_time <- tidy_tweets %>%
 words_by_time
 ```
 
-    ## # A tibble: 859 x 6
+    ## # A tibble: 326 x 6
     ##    time_floor          person word    count time_total word_total
     ##    <dttm>              <chr>  <chr>   <int>      <int>      <int>
-    ##  1 2016-01-01 00:00:00 David  #rstats     2        315        321
-    ##  2 2016-01-01 00:00:00 David  bit         2        315         45
-    ##  3 2016-01-01 00:00:00 David  blog        1        315         60
-    ##  4 2016-01-01 00:00:00 David  broom       2        315         36
-    ##  5 2016-01-01 00:00:00 David  call        2        315         31
-    ##  6 2016-01-01 00:00:00 David  check       1        315         42
-    ##  7 2016-01-01 00:00:00 David  code        3        315         45
-    ##  8 2016-01-01 00:00:00 David  data        2        315        253
-    ##  9 2016-01-01 00:00:00 David  day         2        315         61
-    ## 10 2016-01-01 00:00:00 David  feel        2        315         44
-    ## # ... with 849 more rows
+    ##  1 2016-01-01 00:00:00 David  #rstats     2        315        205
+    ##  2 2016-01-01 00:00:00 David  broom       2        315         34
+    ##  3 2016-01-01 00:00:00 David  data        2        315        148
+    ##  4 2016-01-01 00:00:00 David  ggplot2     1        315         37
+    ##  5 2016-01-01 00:00:00 David  time        2        315         56
+    ##  6 2016-01-01 00:00:00 David  tweets      1        315         46
+    ##  7 2016-01-01 00:00:00 Julia  #rstats    10        437        116
+    ##  8 2016-01-01 00:00:00 Julia  blog        2        437         33
+    ##  9 2016-01-01 00:00:00 Julia  data        5        437        105
+    ## 10 2016-01-01 00:00:00 Julia  day         1        437         43
+    ## # ... with 316 more rows
 
 Each row in this data frame corresponds to one person using one word in a given time bin. The `count` column tells us how many times that person used that word in that time bin, the `time_total` column tells us how many words that person used during that time bin, and the `word_total` column tells us how many times that person used that word over the whole year. This is the data set we can use for modeling.
 
@@ -279,20 +279,20 @@ nested_data <- words_by_time %>%
 nested_data
 ```
 
-    ## # A tibble: 98 x 3
+    ## # A tibble: 32 x 3
     ##    person word    data             
     ##    <chr>  <chr>   <list>           
     ##  1 David  #rstats <tibble [12 × 4]>
-    ##  2 David  bit     <tibble [10 × 4]>
-    ##  3 David  blog    <tibble [12 × 4]>
-    ##  4 David  broom   <tibble [10 × 4]>
-    ##  5 David  call    <tibble [9 × 4]> 
-    ##  6 David  check   <tibble [12 × 4]>
-    ##  7 David  code    <tibble [10 × 4]>
-    ##  8 David  data    <tibble [12 × 4]>
-    ##  9 David  day     <tibble [8 × 4]> 
-    ## 10 David  feel    <tibble [6 × 4]> 
-    ## # ... with 88 more rows
+    ##  2 David  broom   <tibble [10 × 4]>
+    ##  3 David  data    <tibble [12 × 4]>
+    ##  4 David  ggplot2 <tibble [10 × 4]>
+    ##  5 David  time    <tibble [12 × 4]>
+    ##  6 David  tweets  <tibble [8 × 4]> 
+    ##  7 Julia  #rstats <tibble [12 × 4]>
+    ##  8 Julia  blog    <tibble [10 × 4]>
+    ##  9 Julia  data    <tibble [12 × 4]>
+    ## 10 Julia  day     <tibble [12 × 4]>
+    ## # ... with 22 more rows
 
 This data frame has one row for each person-word combination; the `data` column is a list column that contains data frames, one for each combination of person and word. Let's use `map()` from purrr to apply our modeling procedure to each of those little data frames inside our big data frame. This is count data so let’s use `glm()` with `family = "binomial"` for modeling.
 
@@ -310,20 +310,20 @@ nested_models <- nested_data %>%
 nested_models
 ```
 
-    ## # A tibble: 98 x 4
+    ## # A tibble: 32 x 4
     ##    person word    data              models   
     ##    <chr>  <chr>   <list>            <list>   
     ##  1 David  #rstats <tibble [12 × 4]> <S3: glm>
-    ##  2 David  bit     <tibble [10 × 4]> <S3: glm>
-    ##  3 David  blog    <tibble [12 × 4]> <S3: glm>
-    ##  4 David  broom   <tibble [10 × 4]> <S3: glm>
-    ##  5 David  call    <tibble [9 × 4]>  <S3: glm>
-    ##  6 David  check   <tibble [12 × 4]> <S3: glm>
-    ##  7 David  code    <tibble [10 × 4]> <S3: glm>
-    ##  8 David  data    <tibble [12 × 4]> <S3: glm>
-    ##  9 David  day     <tibble [8 × 4]>  <S3: glm>
-    ## 10 David  feel    <tibble [6 × 4]>  <S3: glm>
-    ## # ... with 88 more rows
+    ##  2 David  broom   <tibble [10 × 4]> <S3: glm>
+    ##  3 David  data    <tibble [12 × 4]> <S3: glm>
+    ##  4 David  ggplot2 <tibble [10 × 4]> <S3: glm>
+    ##  5 David  time    <tibble [12 × 4]> <S3: glm>
+    ##  6 David  tweets  <tibble [8 × 4]>  <S3: glm>
+    ##  7 Julia  #rstats <tibble [12 × 4]> <S3: glm>
+    ##  8 Julia  blog    <tibble [10 × 4]> <S3: glm>
+    ##  9 Julia  data    <tibble [12 × 4]> <S3: glm>
+    ## 10 Julia  day     <tibble [12 × 4]> <S3: glm>
+    ## # ... with 22 more rows
 
 Now notice that we have a new column for the modeling results; it is another list column and contains `glm` objects. The next step is to use `map()` and `tidy()` from the broom package to pull out the slopes for each of these models and find the important ones. We are comparing many slopes here and some of them are not statistically significant, so let's apply an adjustment to the p-values for multiple comparisons.
 
@@ -341,19 +341,20 @@ Now let's find the most important slopes. Which words have changed in frequency 
 
 ``` r
 top_slopes <- slopes %>%
-  filter(adjusted.p.value < 0.1)
+  filter(adjusted.p.value < 0.05)
 
 top_slopes
 ```
 
-    ## # A tibble: 5 x 8
+    ## # A tibble: 6 x 8
     ##   person word      term            estimate    std.error statistic     p.value adjusted.p.value
     ##   <chr>  <chr>     <chr>              <dbl>        <dbl>     <dbl>       <dbl>            <dbl>
-    ## 1 David  ggplot2   time_floor -0.0000000807 0.0000000200     -4.04 0.0000523          0.00508  
-    ## 2 Julia  #rstats   time_floor -0.0000000450 0.0000000111     -4.04 0.0000541          0.00519  
-    ## 3 Julia  post      time_floor -0.0000000514 0.0000000149     -3.46 0.000546           0.0519   
-    ## 4 David  stack     time_floor  0.0000000738 0.0000000219      3.37 0.000751           0.0706   
-    ## 5 David  #user2016 time_floor -0.000000817  0.000000155      -5.27 0.000000139        0.0000136
+    ## 1 David  ggplot2   time_floor -0.0000000807 0.0000000200     -4.04 0.0000523         0.00162   
+    ## 2 Julia  #rstats   time_floor -0.0000000450 0.0000000111     -4.04 0.0000541         0.00162   
+    ## 3 Julia  post      time_floor -0.0000000514 0.0000000149     -3.46 0.000546          0.0158    
+    ## 4 David  overflow  time_floor  0.0000000696 0.0000000223      3.12 0.00181           0.0490    
+    ## 5 David  stack     time_floor  0.0000000738 0.0000000219      3.37 0.000751          0.0210    
+    ## 6 David  #user2016 time_floor -0.000000817  0.000000155      -5.27 0.000000139       0.00000445
 
 To visualize our results, we can plot these words' use for both David and Julia over this year of tweets.
 
@@ -389,7 +390,7 @@ words_by_time %>%
 
 (Figure 7.5: Trending words in Julia's tweets)
 
-All the significant slopes for Julia are negative. This means she has not tweeted at a higher rate using any specific words, but instead using a variety of different words; her tweets earlier in the year contained the words shown in this plot at higher proportions. Words she uses when publicizing a new blog post like the \#rstats hashtag and "post" have gone down in frequency, and she tweets less about reading.
+Both the significant slopes for Julia are negative. This means she has not tweeted at a higher rate using any specific words, but instead using a variety of different words; her tweets earlier in the year contained the words shown in this plot at higher proportions. Words she uses when publicizing a new blog post like the \#rstats hashtag and "post" have gone down in frequency.
 
 7.5 Favorites and retweets
 --------------------------
@@ -439,7 +440,7 @@ To start with, let’s look at the number of times each of our tweets was retwee
 ``` r
 totals <- tidy_tweets %>%
   group_by(person, id) %>%
-  summarise(rts = sum(retweets)) %>%
+  summarise(rts = first(retweets)) %>%
   # WHY NOT summarise(rts = first(retweets)) ?!
   group_by(person) %>%
   summarise(total_rts = sum(rts))
@@ -450,8 +451,8 @@ totals
     ## # A tibble: 2 x 2
     ##   person total_rts
     ##   <chr>      <int>
-    ## 1 David     108410
-    ## 2 Julia      12765
+    ## 1 David      13014
+    ## 2 Julia       1750
 
 Now let's find the median number of retweets for each word and person. We probably want to count each tweet/word combination only once, so we will use `group_by()` and `summarise()` twice, one right after the other. The first `summarise()` statement counts how many times each word was retweeted, for each tweet and person. In the second `summarise()` statement, we can find the median retweets for each person and word, also count the number of times each word was used ever by each person and keep that in `uses`. Next, we can join this to the data frame of retweet totals. Let's `filter()` to only keep words mentioned at least 5 times.
 
@@ -475,16 +476,16 @@ word_by_rts %>%
     ## # A tibble: 170 x 5
     ##    person word          retweets  uses total_rts
     ##    <chr>  <chr>            <dbl> <int>     <int>
-    ##  1 David  animation           85     5    108410
-    ##  2 David  gganimate           75     6    108410
-    ##  3 David  error               56     7    108410
-    ##  4 David  start               56     6    108410
-    ##  5 David  download            52     5    108410
-    ##  6 Julia  tidytext            50     7     12765
-    ##  7 David  introducing         45     6    108410
-    ##  8 David  understanding       37     6    108410
-    ##  9 David  ab                  36     5    108410
-    ## 10 David  bayesian            34     7    108410
+    ##  1 David  animation           85     5     13014
+    ##  2 David  gganimate           75     6     13014
+    ##  3 David  error               56     7     13014
+    ##  4 David  start               56     6     13014
+    ##  5 David  download            52     5     13014
+    ##  6 Julia  tidytext            50     7      1750
+    ##  7 David  introducing         45     6     13014
+    ##  8 David  understanding       37     6     13014
+    ##  9 David  ab                  36     5     13014
+    ## 10 David  bayesian            34     7     13014
     ## # ... with 160 more rows
 
 At the top of this sorted data frame, we see tweets from Julia and David about packages that they work on, like [gganimate](https://github.com/dgrtwo/gganimate) and [tidytext](https://cran.r-project.org/package=tidytext). Let's plot the words that have the highest median retweets for each of our accounts (Figure 7.6).
@@ -517,7 +518,7 @@ We can follow a similar procedure to see which words led to more favorites. Are 
 ``` r
 totals <- tidy_tweets %>%
   group_by(person, id) %>%
-  summarise(favs = sum(favorites)) %>%
+  summarise(favs = first(favorites)) %>%
   # WHY NOT summarise(favs = first(favorites)) ?!
   group_by(person) %>%
   summarise(total_favs = sum(favs))

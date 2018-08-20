@@ -1,7 +1,7 @@
 Text Mining with R: A Tidy Approach
 ================
 Julia Silge and David Robinson
-2018-07-18
+2018-08-20
 
 Welcome to Text Mining with R
 =============================
@@ -75,6 +75,6 @@ We would like to thank Oliver Keyes and Gabriela de Queiroz for their contributi
 
 We received thoughtful, thorough technical reviews that improved the quality of this book significantly. We would like to thank Mara Averick, Carolyn Clayton, Simon Jackson, Sean Kross, and Lincoln Mullen for their investment of time and energy in these technical reviews.
 
-This book was written in the open, and several people contributed via pull requests or issues. Special thanks goes to those who contributed via GitHub: @ainilaha, Brian G. Barkley, Jon Calder, @eijoac, Marc Ferradou, Jonathan Gilligan, Matthew Henderson, Simon Jackson, @jedgore, @kanishkamisra, Josiah Parry, @suyi19890508, Stephen Turner, and Yihui Xie.
+This book was written in the open, and several people contributed via pull requests or issues. Special thanks goes to those who contributed via GitHub: @ainilaha, Brian G. Barkley, Jon Calder, @eijoac, Marc Ferradou, Jonathan Gilligan, Matthew Henderson, Simon Jackson, @jedgore, @kanishkamisra, Josiah Parry, Yu-Wen Pu, @suyi19890508, Stephen Turner, and Yihui Xie.
 
 Finally, we want to dedicate this book to our spouses, Robert and Dana. We both could produce a great deal of sentimental text on this subject but will restrict ourselves to heartfelt thanks.

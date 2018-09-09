@@ -236,10 +236,10 @@ Figure 8.2 shows such *strong* connections between the top dozen or so words (wo
 
 ### 8.2.2 Networks of Keywords
 
-Next, let's make a network of the keywords in Figure \@ref(fig:plotcounts) to see which keywords commonly occur together in the same datasets.
+Next, let's make a network of the keywords in Figure 8.3 to see which keywords commonly occur together in the same datasets.
 
-```{r plotcounts, dependson = "toupper", fig.height=7, fig.width=9, fig.cap="Co-occurrence network in NASA dataset keywords"}
-keyword_pairs <- nasa_keyword %>% 
+```{r plotcounts, dependson = "toupper", fig.height=7, fig.width=9}
+keyword_pairs <- nasa_keyword %>%
   pairwise_count(keyword, id, sort = TRUE, upper = FALSE)
 
 keyword_pairs
@@ -256,16 +256,16 @@ keyword_pairs %>%
   theme_void()
 ```
 
+(Figure 8.3: Co-occurrence network in NASA dataset keywords)
+
 We definitely see clustering here, and strong connections between keywords like "OCEANS", "OCEAN OPTICS", and "OCEAN COLOR", or "PROJECT" and "COMPLETED". 
 
-```{block, type = "rmdwarning"}
-These are the most commonly co-occurring words, but also just the most common keywords in general. 
-```
+> These are the most commonly co-occurring words, but also just the most common keywords in general.
 
-To examine the relationships among keywords in a different way, we can find the correlation among the keywords as described in Chapter \@ref(ngrams). This looks for those keywords that are more likely to occur together than with other keywords in a description field.
+To examine the relationships among keywords in a different way, we can find the correlation among the keywords as described in Chapter 4. This looks for those keywords that are more likely to occur together than with other keywords ~~in a description field~~.
 
 ```{r keyword_cors, dependson = "toupper"}
-keyword_cors <- nasa_keyword %>% 
+keyword_cors <- nasa_keyword %>%
   group_by(keyword) %>%
   filter(n() >= 50) %>%
   pairwise_cor(keyword, id, sort = TRUE, upper = FALSE)
@@ -277,31 +277,34 @@ Notice that these keywords at the top of this sorted data frame have correlation
 
 Let's visualize the network of keyword correlations, just as we did for keyword co-occurences.
 
-```{r plotcors, dependson = "keyword_cors", fig.height=8, fig.width=12, fig.cap="Correlation network in NASA dataset keywords"}
+```{r plotcors, dependson = "keyword_cors", fig.height=8, fig.width=12}
 set.seed(1234)
 keyword_cors %>%
   filter(correlation > .6) %>%
   graph_from_data_frame() %>%
   ggraph(layout = "fr") +
-  geom_edge_link(aes(edge_alpha = correlation, edge_width = correlation), edge_colour = "royalblue") +
+  geom_edge_link(aes(edge_alpha = correlation, edge_width = correlation),
+                 edge_colour = "royalblue") +
   geom_node_point(size = 5) +
   geom_node_text(aes(label = name), repel = TRUE,
                  point.padding = unit(0.2, "lines")) +
   theme_void()
 ```
 
-This network in Figure \@ref(fig:plotcors) appears much different than the co-occurence network. The difference is that the co-occurrence network asks a question about which keyword pairs occur most often, and the correlation network asks a question about which keywordsoccur more often together than with other keywords. Notice here the high number of small clusters of keywords; the network structure can be extracted (for further analysis) from the `graph_from_data_frame()` function above.
+(Figure 8.4: Correlation network in NASA dataset keywords)
 
-## Calculating tf-idf for the description fields
+This network in Figure 8.4 appears much different than the co-occurence network. The difference is that the co-occurrence network asks a question about which keyword pairs occur most often, and the correlation network asks a question about which keywords occur more often together than with other keywords. Notice here the high number of small clusters of keywords; the network structure can be extracted (for further analysis) from the `graph_from_data_frame()` function above.
 
-The network graph in Figure \@ref(fig:plotdesc) showed us that the description fields are dominated by a few common words like "data", "global", and "resolution"; this would be an excellent opportunity to use tf-idf as a statistic to find characteristic words for individual description fields. As discussed in Chapter \@ref(tfidf), we can use tf-idf, the term frequency times inverse document frequency, to identify words that are especially important to a document within a collection of documents. Let's apply that approach to the description fields of these NASA datasets. 
+## 8.3 Calculating tf-idf for the description fields
 
-### What is tf-idf for the description field words?
+The network graph in Figure 8.2 showed us that the description fields are dominated by a few common words like "data", "global", and "resolution"; this would be an excellent opportunity to use tf-idf as a statistic to find characteristic words for individual description fields. As discussed in Chapter 3, we can use tf-idf, the term frequency times inverse document frequency, to identify words that are especially important to a document within a collection of documents. Let's apply that approach to the description fields of these NASA datasets. 
+
+### 8.3.1 What is tf-idf for the description field words?
 
 We will consider each description field a document, and the whole set of description fields the collection or corpus of documents. We have already used `unnest_tokens()` earlier in this chapter to make a tidy data frame of the words in the description fields, so now we can use `bind_tf_idf()` to calculate tf-idf for each word.
 
 ```{r desc_tf_idf, dependson = "my_stopwords"}
-desc_tf_idf <- nasa_desc %>% 
+desc_tf_idf <- nasa_desc %>%
   count(id, word, sort = TRUE) %>%
   ungroup() %>%
   bind_tf_idf(word, id, n)
@@ -310,38 +313,42 @@ desc_tf_idf <- nasa_desc %>%
 What are the highest tf-idf words in the NASA description fields?
 
 ```{r dependson = "desc_tf_idf"}
-desc_tf_idf %>% 
+desc_tf_idf %>%
   arrange(-tf_idf)
 ```
 
 These are the most important words in the description fields as measured by tf-idf, meaning they are common but not too common. 
 
-```{block, type = "rmdwarning"}
-Notice we have run into an issue here; both $n$ and term frequency are equal to 1 for these terms, meaning that these were description fields that only had a single word in them. If a description field only contains one word, the tf-idf algorithm will think that is a very important word. 
-```
+> Notice we have run into an issue here; both $n$ and term frequency are equal to 1 for these terms, meaning that these were description fields that only had a single word in them. If a description field only contains one word, the tf-idf algorithm will think that is a very important word.
 
 Depending on our analytic goals, it might be a good idea to throw out all description fields that have very few words.
 
-### Connecting description fields to keywords
+### 8.3.2 Connecting description fields to keywords
 
 We now know which words in the descriptions have high tf-idf, and we also have labels for these descriptions in the keywords. Let’s do a full join of the keyword data frame and the data frame of description words with tf-idf, and then find the highest tf-idf words for a given keyword.
 
 ```{r full_join, dependson = c("desc_tf_idf", "toupper")}
 desc_tf_idf <- full_join(desc_tf_idf, nasa_keyword, by = "id")
+
+desc_tf_idf
 ```
 
-Let's plot some of the most important words, as measured by tf-idf, for a few example keywords used on NASA datasets. First, let's use dplyr operations to filter for the keywords we want to examine and take just the top 15 words for each keyword. Then, let's plot those words in Figure \@ref(fig:plottfidf).
+Let's plot some of the most important words, as measured by tf-idf, for a few example keywords used on NASA datasets. First, let's use dplyr operations to filter for the keywords we want to examine and take just the top 15 words for each keyword. Then, let's plot those words in Figure 8.5.
 
-```{r plottfidf, dependson = "full_join", fig.width=10, fig.height=7, fig.cap="Distribution of tf-idf for words from datasets labeled with select keywords"}
-desc_tf_idf %>% 
+```{r plottfidf, dependson = "full_join", fig.width=10, fig.height=7}
+desc_tf_idf %>%
   filter(!near(tf, 1)) %>%
-  filter(keyword %in% c("SOLAR ACTIVITY", "CLOUDS", 
-                        "SEISMOLOGY", "ASTROPHYSICS",
-                        "HUMAN HEALTH", "BUDGET")) %>%
+    # near(): == with tolerance, to compare floats
+  filter(keyword %in% c(
+    "SOLAR ACTIVITY", "CLOUDS", "SEISMOLOGY",
+    "ASTROPHYSICS", "HUMAN HEALTH", "BUDGET"
+  )) %>%
   arrange(desc(tf_idf)) %>%
   group_by(keyword) %>%
   distinct(word, keyword, .keep_all = TRUE) %>%
-  top_n(15, tf_idf) %>% 
+    # if duplicate, only the first row will be preserved
+    # .keep_all: keep all variables in tbl
+  top_n(15, tf_idf) %>%
   ungroup() %>%
   mutate(word = factor(word, levels = rev(unique(word)))) %>%
   ggplot(aes(word, tf_idf, fill = keyword)) +
@@ -353,27 +360,31 @@ desc_tf_idf %>%
        x = NULL, y = "tf-idf")
 ```
 
+(Figure 8.5: Distribution of tf-idf for words from datasets labeled with selected keywords)
+
 Using tf-idf has allowed us to identify important description words for each of these keywords. Datasets labeled with the keyword "SEISMOLOGY" have words like "earthquake", "risk", and "hazard" in their description, while those labeled with "HUMAN HEALTH" have descriptions characterized by words like "wellbeing", "vulnerability", and "children." Most of the combinations of letters that are not English words are certainly acronyms (like OMB for the Office of Management and Budget), and the examples of years and numbers are important for these topics. The tf-idf statistic has identified the kinds of words it is intended to, important words for individual documents within a collection of documents.
 
-## Topic modeling
+## 8.4 Topic modeling
 
-Using tf-idf as a statistic has already given us insight into the content of NASA description fields, but let's try an additional approach to the question of what the NASA descriptions fields are about. We can use topic modeling as described in Chapter \@ref(topicmodeling) to model each document (description field) as a mixture of topics and each topic as a mixture of words. As in earlier chapters, we will use [latent Dirichlet allocation (LDA)](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation) for our topic modeling; there are other possible approaches for topic modeling.
+Using tf-idf as a statistic has already given us insight into the content of NASA description fields, but let's try an additional approach to the question of what the NASA descriptions fields are about. We can use topic modeling as described in Chapter 6 to model each document (description field) as a mixture of topics and each topic as a mixture of words. As in earlier chapters, we will use [latent Dirichlet allocation (LDA)](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation) for our topic modeling; there are other possible approaches for topic modeling.
 
-### Casting to a document-term matrix
+### 8.4.1 Casting to a document-term matrix
 
 To do the topic modeling as implemented here, we need to make a `DocumentTermMatrix`, a special kind of matrix from the tm package (of course, this is just a specific implementation of the general concept of a "document-term matrix"). Rows correspond to documents (description texts in our case) and columns correspond to terms (i.e., words); it is a sparse matrix and the values are word counts.
 
 Let’s clean up the text a bit using stop words to remove some of the nonsense "words" leftover from HTML or other character encoding. We can use `bind_rows()` to add our custom stop words to the list of default stop words from the tidytext package, and then all at once use `anti_join()` to remove them all from our data frame.
 
 ```{r word_counts, dependson = "my_stopwords"}
-my_stop_words <- bind_rows(stop_words, 
-                           data_frame(word = c("nbsp", "amp", "gt", "lt",
-                                               "timesnewromanpsmt", "font",
-                                               "td", "li", "br", "tr", "quot",
-                                               "st", "img", "src", "strong",
-                                               "http", "file", "files",
-                                               as.character(1:12)), 
-                                      lexicon = rep("custom", 30)))
+my_stop_words <- bind_rows(
+  stop_words,
+  data_frame(word = c("nbsp", "amp", "gt", "lt",
+                      "timesnewromanpsmt", "font",
+                      "td", "li", "br", "tr", "quot",
+                      "st", "img", "src", "strong",
+                      "http", "file", "files",
+                      as.character(1:12)),
+             lexicon = rep("custom", 30))
+  )
 
 word_counts <- nasa_desc %>%
   anti_join(my_stop_words) %>%
@@ -383,7 +394,7 @@ word_counts <- nasa_desc %>%
 word_counts
 ```
 
-This is the information we need, the number of times each word is used in each document, to make a `DocumentTermMatrix`. We can `cast()` from our tidy text format to this non-tidy format as described in detail in Chapter \@ref(dtm).
+This is the information we need, the number of times each word is used in each document, to make a `DocumentTermMatrix`. We can `cast()` from our tidy text format to this non-tidy format as described in detail in Chapter 5.
 
 ```{r desc_dtm, dependson = "word_counts"}
 desc_dtm <- word_counts %>%
@@ -394,7 +405,7 @@ desc_dtm
 
 We see that this dataset contains documents (each of them a NASA description field) and terms (words). Notice that this example document-term matrix is (very close to) 100% sparse, meaning that almost all of the entries in this matrix are zero. Each non-zero entry corresponds to a certain word appearing in a certain document.
 
-### Ready for topic modeling
+### 8.4.2 Ready for topic modeling
 
 Now let’s use the [topicmodels](https://cran.r-project.org/package=topicmodels) package to create an LDA model. How many topics will we tell the algorithm to make? This is a question much like in $k$-means clustering; we don’t really know ahead of time. We tried the following modeling procedure using 8, 16, 24, 32, and 64 topics; we found that at 24 topics, documents are still getting sorted into topics cleanly but going much beyond that caused the distributions of $\gamma$, the probability that each document belongs in each topic, to look worrisome. We will show more details on this later.
 

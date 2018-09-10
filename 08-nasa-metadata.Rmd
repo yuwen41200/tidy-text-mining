@@ -425,7 +425,7 @@ desc_lda
 
 This is a stochastic algorithm that could have different results depending on where the algorithm starts, so we need to specify a `seed` for reproducibility as shown here.
 
-### Interpreting the topic model
+### 8.4.3 Interpreting the topic model
 
 Now that we have built the model, let's `tidy()` the results of the model, i.e., construct a tidy data frame that summarizes the results of the model. The tidytext package includes a tidying method for LDA models from the topicmodels package.
 
@@ -449,15 +449,15 @@ top_terms <- tidy_lda %>%
 top_terms
 ```
 
-It is not very easy to interpret what the topics are about from a data frame like this so let’s look at this information visually in Figure \@ref(fig:plotbeta).
+It is not very easy to interpret what the topics are about from a data frame like this so let’s look at this information visually in Figure 8.6.
 
-```{r plotbeta, dependson = "top_terms", fig.width=12, fig.height=16, fig.cap="Top terms in topic modeling of NASA metadata description field texts"}
+```{r plotbeta, dependson = "top_terms", fig.width=12, fig.height=16}
 top_terms %>%
   mutate(term = reorder(term, beta)) %>%
-  group_by(topic, term) %>%    
-  arrange(desc(beta)) %>%  
-  ungroup() %>%
-  mutate(term = factor(paste(term, topic, sep = "__"), 
+  #group_by(topic, term) %>%  # seems redundant
+  #arrange(desc(beta)) %>%  # seems redundant
+  #ungroup() %>%  # seems redundant
+  mutate(term = factor(paste(term, topic, sep = "__"),
                        levels = rev(paste(term, topic, sep = "__")))) %>%
   ggplot(aes(term, beta, fill = as.factor(topic))) +
   geom_col(show.legend = FALSE) +
@@ -467,6 +467,8 @@ top_terms %>%
        x = NULL, y = expression(beta)) +
   facet_wrap(~ topic, ncol = 4, scales = "free")
 ```
+
+(Figure 8.6: Top terms in topic modeling of NASA metadata description field texts)
 
 We can see what a dominant word "data" is in these description texts. In addition, there are meaningful differences between these collections of terms, from terms about soil, forests, and biomass in topic 12 to terms about design, systems, and technology in topic 21. The topic modeling process has identified groupings of terms that we can understand as human readers of these description fields.
 
@@ -478,9 +480,9 @@ lda_gamma <- tidy(desc_lda, matrix = "gamma")
 lda_gamma
 ```
 
-Notice that some of the probabilites visible at the top of the data frame are low and some are higher. Our model has assigned a probability to each description belonging to each of the topics we constructed from the sets of words. How are the probabilities distributed? Let's visualize them (Figure \@ref(fig:plotgammaall)).
+Notice that some of the probabilites visible at the top of the data frame are low and some are higher. Our model has assigned a probability to each description belonging to each of the topics we constructed from the sets of words. How are the probabilities distributed? Let's visualize them (Figure 8.7).
 
-```{r plotgammaall, dependson = "lda_gamma", fig.width=7, fig.height=5, fig.cap="Probability distribution in topic modeling of NASA metadata description field texts"}
+```{r plotgammaall, dependson = "lda_gamma", fig.width=7, fig.height=5}
 ggplot(lda_gamma, aes(gamma)) +
   geom_histogram() +
   scale_y_log10() +
@@ -488,9 +490,11 @@ ggplot(lda_gamma, aes(gamma)) +
        y = "Number of documents", x = expression(gamma))
 ```
 
-First notice that the y-axis is plotted on a log scale; otherwise it is difficult to make out any detail in the plot. Next, notice that $\gamma$ runs from 0 to 1; remember that this is the probability that a given document belongs in a given topic. There are many values near zero, which means there are many documents that do not belong in each topic. Also, there are many values near $\gamma = 1$; these are the documents that *do* belong in those topics. This distribution shows that documents are being well discriminated as belonging to a topic or not. We can also look at how the probabilities are distributed within each topic, as shown in Figure \@ref(fig:plotgamma).
+(Figure 8.7: Probability distribution in topic modeling of NASA metadata description field texts)
 
-```{r plotgamma, dependson = "lda_gamma", fig.width=10, fig.height=12, fig.cap="Probability distribution for each topic in topic modeling of NASA metadata description field texts"}
+First notice that the y-axis is plotted on a log scale; otherwise it is difficult to make out any detail in the plot. Next, notice that $\gamma$ runs from 0 to 1; remember that this is the probability that a given document belongs in a given topic. There are many values near zero, which means there are many documents that do not belong in each topic. Also, there are many values near $\gamma = 1$; these are the documents that *do* belong in those topics. This distribution shows that documents are being well discriminated as belonging to a topic or not. We can also look at how the probabilities are distributed within each topic, as shown in Figure 8.8.
+
+```{r plotgamma, dependson = "lda_gamma", fig.width=10, fig.height=12}
 ggplot(lda_gamma, aes(gamma, fill = as.factor(topic))) +
   geom_histogram(show.legend = FALSE) +
   facet_wrap(~ topic, ncol = 4) +
@@ -499,11 +503,13 @@ ggplot(lda_gamma, aes(gamma, fill = as.factor(topic))) +
        y = "Number of documents", x = expression(gamma))
 ```
 
-Let's look specifically at topic 18 in Figure \@ref(fig:plotgamma), a topic that had documents cleanly sorted in and out of it. There are many documents with $\gamma$ close to 1; these are the documents that *do* belong to topic 18 according to the model. There are also many documents with $\gamma$ close to 0; these are the documents that do *not* belong to topic 18. Each document appears in each panel in this plot, and its $\gamma$ for that topic tells us that document's probability of belonging in that topic.
+(Figure 8.8: Probability distribution for each topic in topic modeling of NASA metadata description field texts)
+
+Let's look specifically at topic 18 in Figure 8.8, a topic that had documents cleanly sorted in and out of it. There are many documents with $\gamma$ close to 1; these are the documents that *do* belong to topic 18 according to the model. There are also many documents with $\gamma$ close to 0; these are the documents that do *not* belong to topic 18. Each document appears in each panel in this plot, and its $\gamma$ for that topic tells us that document's probability of belonging in that topic.
 
 This plot displays the type of information we used to choose how many topics for our topic modeling procedure. When we tried options higher than 24 (such as 32 or 64), the distributions for $\gamma$ started to look very flat toward $\gamma = 1$; documents were not getting sorted into topics very well.
 
-### Connecting topic modeling with keywords
+### 8.4.4 Connecting topic modeling with keywords
 
 Let’s connect these topic models with the keywords and see what relationships we can find. We can `full_join()` this to the human-tagged keywords and discover which keywords are associated with which topic.
 
@@ -516,8 +522,8 @@ lda_gamma
 Now we can use `filter()` to keep only the document-topic entries that have probabilities ($\gamma$) greater than some cut-off value; let's use 0.9.
 
 ```{r top_keywords, dependson = "lda_join"}
-top_keywords <- lda_gamma %>% 
-  filter(gamma > 0.9) %>% 
+top_keywords <- lda_gamma %>%
+  filter(gamma > 0.9) %>%
   count(topic, keyword, sort = TRUE)
 
 top_keywords
@@ -525,14 +531,14 @@ top_keywords
 
 What are the top keywords for each topic?
 
-```{r plottopkeywords, dependson = "top_keywords", fig.width=16, fig.height=16, fig.cap="Top keywords in topic modeling of NASA metadata description field texts"}
+```{r plottopkeywords, dependson = "top_keywords", fig.width=16, fig.height=16}
 top_keywords %>%
   group_by(topic) %>%
   top_n(5, n) %>%
-  group_by(topic, keyword) %>%
-  arrange(desc(n)) %>%  
+  #group_by(topic, keyword) %>%  # seems redundant
+  arrange(desc(n)) %>%
   ungroup() %>%
-  mutate(keyword = factor(paste(keyword, topic, sep = "__"), 
+  mutate(keyword = factor(paste(keyword, topic, sep = "__"),
                           levels = rev(paste(keyword, topic, sep = "__")))) %>%
   ggplot(aes(keyword, n, fill = as.factor(topic))) +
   geom_col(show.legend = FALSE) +
@@ -543,12 +549,12 @@ top_keywords %>%
   facet_wrap(~ topic, ncol = 4, scales = "free")
 ```
 
-Let's take a step back and remind ourselves what Figure \@ref(fig:plottopkeywords) is telling us. NASA datasets are tagged with keywords by human beings, and we have built an LDA topic model (with 24 topics) for the description fields of the NASA datasets. This plot answers the question, "For the datasets with description fields that have a high probability of belonging to a given topic, what are the most common human-assigned keywords?"
+(Figure 8.9: Top keywords in topic modeling of NASA metadata description field texts)
 
-It’s interesting that the keywords for topics 13, 16, and 18 are essentially duplicates of each other ("OCEAN COLOR", "OCEAN OPTICS", "OCEANS"), because the top words in those topics do exhibit meaningful differences, as shown in Figure \@ref(fig:plotbeta). Also note that by number of documents, the combination of 13, 16, and 18 is quite a large percentage of the total number of datasets represented in this plot, and even more if we were to include topic 11. By number, there are *many* datasets at NASA that deal with oceans, ocean color, and ocean optics. We see "PROJECT COMPLETED" in topics 9, 10, and 21, along with the names of NASA laboratories and research centers. Other important subject areas that stand out are groups of keywords about atmospheric science, budget/finance, and population/human dimensions. We can go back to Figure \@ref(fig:plotbeta) on terms and topics to see which words in the description fields are driving datasets being assigned to these topics. For example, topic 4 is associated with keywords about population and human dimensions, and some of the top terms for that topic are "population", "international", "center", and "university".
+Let's take a step back and remind ourselves what Figure 8.9 is telling us. NASA datasets are tagged with keywords by human beings, and we have built an LDA topic model (with 24 topics) for the description fields of the NASA datasets. This plot answers the question, "For the datasets with description fields that have a high probability of belonging to a given topic, what are the most common human-assigned keywords?"
 
-## Summary
+It’s interesting that the keywords for topics 13, 16, and 18 are essentially duplicates of each other ("OCEAN COLOR", "OCEAN OPTICS", "OCEANS"), because the top words in those topics do exhibit meaningful differences, as shown in Figure 8.6. Also note that by number of documents, the combination of 13, 16, and 18 is quite a large percentage of the total number of datasets represented in this plot, and even more if we were to include topic 11. By number, there are *many* datasets at NASA that deal with oceans, ocean color, and ocean optics. We see "PROJECT COMPLETED" in topics 9, 10, and 21, along with the names of NASA laboratories and research centers. Other important subject areas that stand out are groups of keywords about atmospheric science, budget/finance, and population/human dimensions. We can go back to Figure 8.6 on terms and topics to see which words in the description fields are driving datasets being assigned to these topics. For example, topic 4 is associated with keywords about population and human dimensions, and some of the top terms for that topic are "population", "international", "center", and "university".
+
+## 8.5 Summary
 
 By using a combination of network analysis, tf-idf, and topic modeling, we have come to a greater understanding of how datasets are related at NASA. Specifically, we have more information now about how keywords are connected to each other and which datasets are likely to be related. The topic model could be used to suggest keywords based on the words in the description field, or the work on the keywords could suggest the most important combination of keywords for certain areas of study.
-
-

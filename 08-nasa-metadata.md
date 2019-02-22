@@ -100,7 +100,7 @@ nasa_title
     ##  8 55942a58c63a7fe59b495a7e 2001 Environmental Sustainability Index (ESI)      
     ##  9 55942a58c63a7fe59b495a7f 2001 Environmental Sustainability Index (ESI)      
     ## 10 55942a58c63a7fe59b495a80 2001 Environmental Sustainability Index (ESI)      
-    ## # ... with 32,079 more rows
+    ## # … with 32,079 more rows
 
 These are just a few example titles from the datasets we will be
 exploring. Notice that we have the NASA-assigned ids here, and also that
@@ -153,7 +153,7 @@ nasa_keyword
     ##  8 55942a58c63a7fe59b495a79 HYDROSPHERE  
     ##  9 55942a58c63a7fe59b495a79 SURFACE WATER
     ## 10 55942a58c63a7fe59b495a7a EARTH SCIENCE
-    ## # ... with 126,804 more rows
+    ## # … with 126,804 more rows
 
 This is a tidy data frame because we have one row for each keyword; this
 means we will have multiple rows for each dataset because a dataset can
@@ -199,7 +199,7 @@ nasa_desc
     ##  8 55942a57c63a7fe59b495a78 15    
     ##  9 55942a57c63a7fe59b495a78 minute
     ## 10 55942a57c63a7fe59b495a78 stream
-    ## # ... with 210,904 more rows
+    ## # … with 210,904 more rows
     ## # A tibble: 2,677,811 x 2
     ##    id                       word   
     ##    <chr>                    <chr>  
@@ -213,7 +213,7 @@ nasa_desc
     ##  8 55942a57c63a7fe59b495a77 creek  
     ##  9 55942a57c63a7fe59b495a77 konza  
     ## 10 55942a57c63a7fe59b495a77 prairie
-    ## # ... with 2,677,801 more rows
+    ## # … with 2,677,801 more rows
 
 ### 8.1.2 Some initial simple exploration
 
@@ -238,7 +238,7 @@ nasa_title %>%
     ##  8 3        1364
     ##  9 aura     1363
     ## 10 l2       1311
-    ## # ... with 11,604 more rows
+    ## # … with 11,604 more rows
 
 What about the descriptions?
 
@@ -260,7 +260,7 @@ nasa_desc %>%
     ##  8 aqua       14738
     ##  9 earth      14373
     ## 10 resolution 13879
-    ## # ... with 35,930 more rows
+    ## # … with 35,930 more rows
 
 Words like “data” and “global” are used very often in NASA titles and
 descriptions. We may want to remove digits and some “words” like “v1”
@@ -311,7 +311,7 @@ nasa_keyword %>%
     ##  8 ATMOSPHERIC WATER VAPOR  3142
     ##  9 OCEANS                   2765
     ## 10 LAND SURFACE             2720
-    ## # ... with 1,764 more rows
+    ## # … with 1,764 more rows
 
 We likely want to change all of the keywords to either lower or upper
 case to get rid of duplicates like “OCEANS” and “Oceans”. Let’s do that
@@ -358,7 +358,7 @@ title_word_pairs
     ##  8 global daily     574
     ##  9 data   boreas    551
     ## 10 ground gpm       550
-    ## # ... with 156,679 more rows
+    ## # … with 156,679 more rows
 
 These are the pairs of words that occur together most often in title
 fields. Some of these words are obviously acronyms used within NASA, and
@@ -384,7 +384,7 @@ desc_word_pairs
     ##  8 resolution bands       7584
     ##  9 data       earth       7576
     ## 10 orbit      resolution  7462
-    ## # ... with 10,889,074 more rows
+    ## # … with 10,889,074 more rows
 
 These are the pairs of words that occur together most often in
 descripton fields. “Data” is a very common word in description fields;
@@ -482,7 +482,7 @@ keyword_pairs %>%
     ##  8 EARTH SCIENCE OCEANS                   2762
     ##  9 EARTH SCIENCE LAND SURFACE             2718
     ## 10 EARTH SCIENCE BIOSPHERE                2448
-    ## # ... with 13,380 more rows
+    ## # … with 13,380 more rows
 
 <img src="08-nasa-metadata_files/figure-gfm/plotcounts-1.png" width="864" />
 
@@ -498,7 +498,7 @@ and “COMPLETED”.
 To examine the relationships among keywords in a different way, we can
 find the correlation among the keywords as described in Chapter 4. This
 looks for those keywords that are more likely to occur together than
-with other keywords ~~in a description field~~.
+with other keywords.
 
 ``` r
 keyword_cors <- nasa_keyword %>%
@@ -522,7 +522,7 @@ keyword_cors
     ##  8 ATMOSPHERIC SCIENCE CLOUD             0.994
     ##  9 LAUNCH              SCHEDULE          0.984
     ## 10 LAUNCH              EXPEDITION        0.984
-    ## # ... with 7,865 more rows
+    ## # … with 7,865 more rows
 
 Notice that these keywords at the top of this sorted data frame have
 correlation coefficients equal to 1; they always occur together. This
@@ -605,7 +605,7 @@ desc_tf_idf %>%
     ##  8 55942ad8c63a7fe59b49cf6c template_proddescription                          1     1  8.30   8.30
     ##  9 55942ad8c63a7fe59b49cf6d template_proddescription                          1     1  8.30   8.30
     ## 10 55942ad8c63a7fe59b49cf6e template_proddescription                          1     1  8.30   8.30
-    ## # ... with 1,913,214 more rows
+    ## # … with 1,913,214 more rows
 
 These are the most important words in the description fields as measured
 by tf-idf, meaning they are common but not too common.
@@ -645,7 +645,7 @@ desc_tf_idf
     ##  8 55942a88c63a7fe59b498280 nbsp    655 0.383   4.21  1.61  ACTIVE              
     ##  9 55942a8ec63a7fe59b4986ef gt      330 0.0926  3.23  0.299 JOHNSON SPACE CENTER
     ## 10 55942a8ec63a7fe59b4986ef gt      330 0.0926  3.23  0.299 PROJECT             
-    ## # ... with 7,749,603 more rows
+    ## # … with 7,749,603 more rows
 
 Let’s plot some of the most important words, as measured by tf-idf, for
 a few example keywords used on NASA datasets. First, let’s use dplyr
@@ -755,7 +755,7 @@ word_counts
     ##  8 55942a89c63a7fe59b4982d9 em          32
     ##  9 55942a8ec63a7fe59b4986ef al          32
     ## 10 55942a8ec63a7fe59b4986ef human       31
-    ## # ... with 1,895,300 more rows
+    ## # … with 1,895,300 more rows
 
 This is the information we need, the number of times each word is used
 in each document, to make a `DocumentTermMatrix`. We can `cast()` from
@@ -834,7 +834,7 @@ tidy_lda
     ##  8     8 suit  3.74e- 20
     ##  9     9 suit  4.85e- 15
     ## 10    10 suit  4.77e- 10
-    ## # ... with 861,614 more rows
+    ## # … with 861,614 more rows
 
 The column \(\beta\) tells us the probability of that term being
 generated from that topic for that document. It is the probability of
@@ -866,7 +866,7 @@ top_terms
     ##  8     1 surface     0.0129
     ##  9     1 accuracy    0.0123
     ## 10     1 set         0.0116
-    ## # ... with 230 more rows
+    ## # … with 230 more rows
 
 It is not very easy to interpret what the topics are about from a data
 frame like this so let’s look at this information visually in Figure
@@ -926,7 +926,7 @@ lda_gamma
     ##  8 55942a8bc63a7fe59b4984b5     1 0.0000431 
     ##  9 55942a6ec63a7fe59b496bf7     1 0.0000441 
     ## 10 55942a8ec63a7fe59b4986f6     1 0.0000288 
-    ## # ... with 768,062 more rows
+    ## # … with 768,062 more rows
 
 Notice that some of the probabilites visible at the top of the data
 frame are low and some are higher. Our model has assigned a probability
@@ -1013,7 +1013,7 @@ lda_gamma
     ##  8 55942a89c63a7fe59b4982d9     1 0.0492     PROJECT                    
     ##  9 55942a89c63a7fe59b4982d9     1 0.0492     COMPLETED                  
     ## 10 56cf5b00a759fdadc44e55cd     1 0.0000225  DASHLINK                   
-    ## # ... with 3,037,661 more rows
+    ## # … with 3,037,661 more rows
 
 Now we can use `filter()` to keep only the document-topic entries that
 have probabilities (\(\gamma\)) greater than some cut-off value; let’s
@@ -1040,7 +1040,7 @@ top_keywords
     ##  8    12 EARTH SCIENCE   909
     ##  9     9 COMPLETED       834
     ## 10    16 OCEAN COLOR     768
-    ## # ... with 1,012 more rows
+    ## # … with 1,012 more rows
 
 What are the top keywords for each topic?
 

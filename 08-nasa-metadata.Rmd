@@ -262,7 +262,7 @@ We definitely see clustering here, and strong connections between keywords like 
 
 > These are the most commonly co-occurring words, but also just the most common keywords in general.
 
-To examine the relationships among keywords in a different way, we can find the correlation among the keywords as described in Chapter 4. This looks for those keywords that are more likely to occur together than with other keywords ~~in a description field~~.
+To examine the relationships among keywords in a different way, we can find the correlation among the keywords as described in Chapter 4. This looks for those keywords that are more likely to occur together than with other keywords.
 
 ```{r keyword_cors, dependson = "toupper"}
 keyword_cors <- nasa_keyword %>%
